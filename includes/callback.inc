@@ -65,13 +65,17 @@ function islandora_internet_archive_bookreader_search_callback($object_id, $term
     drupal_exit();
   }
 
+  $component = variable_get('islandora_ocr_solr_hocr_highlighting_use_fast', TRUE) ?
+    'tag' :
+    'simple';
+
   $results = islandora_paged_content_perform_solr_highlighting_query($term, array(
     'fq' => array(format_string('!field:("info:fedora/!value" OR "!value")', array(
       '!field' => variable_get('islandora_internet_archive_bookreader_ocr_filter_field', 'RELS_EXT_isMemberOf_uri_ms'),
       '!value' => $object_id,
     ))),
-    'hl.tag.pre' => '{{{',
-    'hl.tag.post' => '}}}',
+    "hl.$component.pre" => '{{{',
+    "hl.$component.post" => '}}}',
     'defType' => 'dismax',
   ));
   $results = islandora_internet_archive_bookreader_remap_highlighting_for_bookreader_results($results);
